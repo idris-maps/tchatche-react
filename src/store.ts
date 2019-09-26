@@ -78,6 +78,7 @@ const reducer = (state: State = defaultState, action: Action): State => {
       ...state,
       config: action.payload.messages,
       pace: action.payload.pace,
+      conversation: [],
     }
   }
   if (isSetDataAction(action)) {
