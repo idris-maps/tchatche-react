@@ -3,7 +3,7 @@ import Messages from './components/Messages'
 import UserAction from './components/UserAction'
 import { action, store, State, Action, StoreAction } from './store'
 import { BotMessage, Message } from './types'
-import { Store } from 'redux'
+import { Store, Unsubscribe } from 'redux'
 
 interface Props {
   messages: BotMessage[]
@@ -15,6 +15,7 @@ class Chatbot extends React.Component<Props, {}> {
 
   private store: Store<State, Action>
   private storeAction: StoreAction
+  private unsubscribe?: Unsubscribe
 
   constructor(props: Props) {
     super(props)
@@ -23,8 +24,14 @@ class Chatbot extends React.Component<Props, {}> {
   }
 
   componentDidMount() {
-    this.store.subscribe(() => { this.forceUpdate() })
+    this.unsubscribe = this.store.subscribe(() => { this.forceUpdate() })
     this.storeAction.init(this.props.messages, this.props.pace)
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   }
 
   render() {
