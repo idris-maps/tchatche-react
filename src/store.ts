@@ -78,7 +78,7 @@ const reducer = (state: State = defaultState, action: Action): State => {
       ...state,
       config: action.payload.messages,
       pace: action.payload.pace,
-      conversation: [],
+      conversation: action.payload.messages[0].botSays(state.data).map(message => ({ message, isBot: true })),
     }
   }
   if (isSetDataAction(action)) {
@@ -152,10 +152,6 @@ export interface StoreAction {
 export const action: StoreAction = {
   init: (messages: BotMessage[], pace: number = 500) => {
     store.dispatch({ type: 'SET_CONFIG', payload: { messages, pace } })
-    const first = messages[0]
-    if (first) {
-      runMessage(first, pace, store.getState().data)
-    }
   },
   userAnswered: (submited: OnSubmitData | OnSubmitEnd) => {
       const { data } = submited
