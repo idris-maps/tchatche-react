@@ -77,8 +77,9 @@ const reducer = (state: State = defaultState, action: Action): State => {
     return {
       ...state,
       config: action.payload.messages,
-      pace: action.payload.pace,
       conversation: action.payload.messages[0].botSays(state.data).map(message => ({ message, isBot: true })),
+      current: action.payload.messages[0],
+      pace: action.payload.pace,
     }
   }
   if (isSetDataAction(action)) {
