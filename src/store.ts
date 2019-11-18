@@ -153,7 +153,7 @@ export const action: StoreAction = {
   init: (messages: BotMessage[], pace: number = 500) => {
     store.dispatch({ type: 'SET_CONFIG', payload: { messages, pace } })
     const first = messages[0]
-    if (first) {
+    if (first && store.getState().conversation.length === 0) {
       runMessage(first, pace, store.getState().data)
     }
   },
