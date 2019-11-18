@@ -49,12 +49,13 @@ const Buttons = ({ data, storeAction, userAction }: ButtonsProps) => {
   const { buttons, onSubmit } = userAction
   return <React.Fragment>
     {
-      buttons.map(button =>
+      buttons.map((button, index) =>
         <OneButton
           button={button}
           data={data}
           onSubmit={onSubmit}
           storeAction={storeAction}
+          key={index}
           />
       )
     }
