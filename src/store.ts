@@ -7,7 +7,6 @@ export interface State {
   current?: BotMessage
   data: object
   end?: boolean
-  hasInitialized: boolean
   pace: number
 }
 
@@ -15,7 +14,6 @@ const defaultState = {
   conversation: [],
   config: [],
   data: {},
-  hasInitialized: false,
   pace: 500,
 }
 
@@ -79,9 +77,8 @@ const reducer = (state: State = defaultState, action: Action): State => {
     return {
       ...state,
       config: action.payload.messages,
-      conversation: [],
-      hasInitialized: true,
       pace: action.payload.pace,
+      conversation: [],
     }
   }
   if (isSetDataAction(action)) {
@@ -154,12 +151,10 @@ export interface StoreAction {
 
 export const action: StoreAction = {
   init: (messages: BotMessage[], pace: number = 500) => {
-    if (!store.getState().hasInitialized) {
-      store.dispatch({ type: 'SET_CONFIG', payload: { messages, pace } })
-      const first = messages[0]
-      if (first) {
-        runMessage(first, pace, store.getState().data)
-      }
+    store.dispatch({ type: 'SET_CONFIG', payload: { messages, pace } })
+    const first = messages[0]
+    if (first) {
+      runMessage(first, pace, store.getState().data)
     }
   },
   userAnswered: (submited: OnSubmitData | OnSubmitEnd) => {
