@@ -29,6 +29,7 @@ class Chatbot extends React.Component<Props, {}> {
   }
 
   componentWillUnmount() {
+    this.storeAction.reset()
     if (this.unsubscribe) {
       this.unsubscribe()
     }

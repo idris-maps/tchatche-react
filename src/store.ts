@@ -62,14 +62,22 @@ interface SetEndAction {
 const isSetEndAction = (action: Action): action is SetEndAction =>
   action.type === actionType.SET_END
 
-export type Action = SetDataAction | SetMessageAction | SetCurrentAction | SetConfigAction | SetEndAction
+interface ResetAction {
+  type: 'RESET'
+}
+
+const isResetAction = (action: Action): action is ResetAction =>
+  action.type === actionType.RESET
+
+export type Action = SetDataAction | SetMessageAction | SetCurrentAction | SetConfigAction | SetEndAction | ResetAction
 
 export const actionType = {
-  SET_DATA: 'SET_DATA',
-  SET_MSG: 'SET_MSG',
-  SET_CURRENT: 'SET_CURRENT',
+  RESET: 'RESET',
   SET_CONFIG: 'SET_CONFIG',
+  SET_CURRENT: 'SET_CURRENT',
+  SET_DATA: 'SET_DATA',
   SET_END: 'SET_END',
+  SET_MSG: 'SET_MSG',
 }
 
 const reducer = (state: State = defaultState, action: Action): State => {
@@ -105,6 +113,9 @@ const reducer = (state: State = defaultState, action: Action): State => {
       ...state,
       end: true,
     }
+  }
+  if (isResetAction(action)) {
+    return defaultState
   }
   return state
 }
@@ -146,8 +157,9 @@ const runMessage = (msg: BotMessage, pace: number, data: any) => {
 
 export interface StoreAction {
   init: (messages: BotMessage[], pace?: number) => void
-  userAnswered: (submited: OnSubmitData | OnSubmitEnd) => void
+  reset: () => void
   setData: (property: string, value: any) => any
+  userAnswered: (submited: OnSubmitData | OnSubmitEnd) => void
 }
 
 export const action: StoreAction = {
@@ -174,4 +186,6 @@ export const action: StoreAction = {
   },
   setData: (property: string, value: any) =>
     store.dispatch({ type: 'SET_DATA', payload: { property, value } }),
+  reset: () =>
+    store.dispatch({ type: 'RESET' }),
 }
