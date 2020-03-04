@@ -41,7 +41,7 @@ const isSetDataAction = (action: Action): action is SetDataAction =>
 
 interface SetMessageAction {
   type: 'SET_MSG'
-  payload: { message: string, isBot?: boolean }
+  payload: { message: string; isBot?: boolean }
 }
 
 const isSetMessageAction = (action: Action): action is SetMessageAction =>
@@ -69,7 +69,13 @@ interface ResetAction {
 const isResetAction = (action: Action): action is ResetAction =>
   action.type === actionType.RESET
 
-export type Action = SetDataAction | SetMessageAction | SetCurrentAction | SetConfigAction | SetEndAction | ResetAction
+export type Action =
+  | SetDataAction
+  | SetMessageAction
+  | SetCurrentAction
+  | SetConfigAction
+  | SetEndAction
+  | ResetAction
 
 export const actionType = {
   RESET: 'RESET',
@@ -85,7 +91,9 @@ const reducer = (state: State = defaultState, action: Action): State => {
     return {
       ...state,
       config: action.payload.messages,
-      conversation: action.payload.messages[0].botSays(state.data).map(message => ({ message, isBot: true })),
+      conversation: action.payload.messages[0]
+        .botSays(state.data)
+        .map(message => ({ message, isBot: true })),
       current: action.payload.messages[0],
       pace: action.payload.pace,
     }
@@ -93,7 +101,7 @@ const reducer = (state: State = defaultState, action: Action): State => {
   if (isSetDataAction(action)) {
     return {
       ...state,
-      data: { ...state.data, [action.payload.property]: action.payload.value }
+      data: { ...state.data, [action.payload.property]: action.payload.value },
     }
   }
   if (isSetMessageAction(action)) {
@@ -125,7 +133,7 @@ export const store = createStore(reducer)
 const runIn = (time: number) => (func: Function) =>
   setTimeout(() => func(), time)
 
-const addMessage = (msg: { message: string, isBot?: boolean }) => {
+const addMessage = (msg: { message: string; isBot?: boolean }) => {
   store.dispatch({ type: 'SET_MSG', payload: msg })
   runIn(100)(() => {
     const container = document.querySelector('#tchatche-messages')
@@ -137,7 +145,9 @@ const addMessage = (msg: { message: string, isBot?: boolean }) => {
 
 const focusInput = () => {
   // @ts-ignore
-  const input: HTMLInputElement | null = document.querySelector('#tchatche-user-action > input')
+  const input: HTMLInputElement | null = document.querySelector(
+    '#tchatche-user-action > input',
+  )
   if (input) {
     runIn(100)(() => input.focus())
   }
@@ -148,8 +158,10 @@ const isEnd = (submited: OnSubmitData | OnSubmitEnd): submited is OnSubmitEnd =>
 
 const runMessage = (msg: BotMessage, pace: number, data: any) => {
   const says = msg.botSays(data)
-  says.map((message, i) => runIn(pace * (i + 1))(() => addMessage({ message, isBot: true })))
-  runIn((says.length) * pace)(() => {
+  says.map((message, i) =>
+    runIn(pace * (i + 1))(() => addMessage({ message, isBot: true })),
+  )
+  runIn(says.length * pace)(() => {
     store.dispatch({ type: 'SET_CURRENT', payload: msg })
     focusInput()
   })
@@ -167,25 +179,24 @@ export const action: StoreAction = {
     store.dispatch({ type: 'SET_CONFIG', payload: { messages, pace } })
   },
   userAnswered: (submited: OnSubmitData | OnSubmitEnd) => {
-      const { data } = submited
-      store.dispatch({ type: 'SET_CURRENT', payload: undefined })
-      if (data) {
-        store.dispatch({ type: 'SET_DATA', payload: data })
-        addMessage({ message: data.label || data.value })
+    const { data } = submited
+    store.dispatch({ type: 'SET_CURRENT', payload: undefined })
+    if (data) {
+      store.dispatch({ type: 'SET_DATA', payload: data })
+      addMessage({ message: data.label || data.value })
+    }
+    if (isEnd(submited)) {
+      store.dispatch({ type: 'SET_END' })
+    } else {
+      const { config, data } = store.getState()
+      const next = config.find(({ id }) => id === submited.nextMessageId)
+      if (next) {
+        const { pace } = store.getState()
+        runMessage(next, pace, data)
       }
-      if (isEnd(submited)) {
-        store.dispatch({ type: 'SET_END' })
-      } else {
-        const { config, data } = store.getState()
-        const next = config.find(({ id }) => id === submited.nextMessageId)
-        if (next) {
-          const { pace } = store.getState()
-          runMessage(next, pace, data)
-        }
-      }
+    }
   },
   setData: (property: string, value: any) =>
     store.dispatch({ type: 'SET_DATA', payload: { property, value } }),
-  reset: () =>
-    store.dispatch({ type: 'RESET' }),
+  reset: () => store.dispatch({ type: 'RESET' }),
 }
