@@ -1,10 +1,10 @@
 export interface OnSubmitData {
   nextMessageId: string
-  data: { property: string, value: string, label?: string }
+  data: { property: string; value: string; label?: string }
 }
 
 export interface OnSubmitEnd {
-  data: { property: string, value: string, label?: string }
+  data: { property: string; value: string; label?: string }
   isEnd: true
 }
 
@@ -14,7 +14,11 @@ export interface UserActionInput {
   inputType: 'input'
   placeholder?: string
   type?: string
-  onSubmit: (userInput: string, data: object, setData: (property: string, value: any) => void) => OnSubmitResponse
+  onSubmit: (
+    userInput: string,
+    data: object,
+    setData: (property: string, value: any) => void,
+  ) => OnSubmitResponse
 }
 
 export interface Button {
@@ -25,11 +29,14 @@ export interface Button {
 export interface UserActionButton {
   inputType: 'buttons'
   buttons: Button[]
-  onSubmit: (button: Button, data: object, setData: (property: string, value: any) => void) => OnSubmitResponse
+  onSubmit: (
+    button: Button,
+    data: object,
+    setData: (property: string, value: any) => void,
+  ) => OnSubmitResponse
 }
 
-export type UserAction = UserActionInput
-  | UserActionButton
+export type UserAction = UserActionInput | UserActionButton
 
 export interface BotMessage {
   id: string
@@ -44,5 +51,5 @@ export interface Message {
 
 export interface Listener {
   event: 'end'
-  callback: (onEndData: { conversation: Message[], data: object }) => void
+  callback: (onEndData: { conversation: Message[]; data: object }) => void
 }

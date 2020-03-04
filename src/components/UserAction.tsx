@@ -1,8 +1,16 @@
 import React from 'react'
-import { Button, UserAction, UserActionButton, UserActionInput, OnSubmitResponse } from '../types'
+import {
+  Button,
+  UserAction,
+  UserActionButton,
+  UserActionInput,
+  OnSubmitResponse,
+} from '../types'
 import { StoreAction } from '../store'
 
-interface Data { [key: string]: any }
+interface Data {
+  [key: string]: any
+}
 
 const isButtonAction = (action: UserAction): action is UserActionButton =>
   action.inputType === 'buttons'
@@ -13,31 +21,35 @@ const isInputAction = (action: UserAction): action is UserActionInput =>
 const onClick = (
   button: Button,
   data: Data,
-  onSubmit: (button: Button, data: any, setData: (property: string, value: any) => void) => OnSubmitResponse,
-  storeAction: StoreAction
-) =>
-  () =>
-    onSubmit(button, data, storeAction.setData)
-      .then(storeAction.userAnswered)
+  onSubmit: (
+    button: Button,
+    data: any,
+    setData: (property: string, value: any) => void,
+  ) => OnSubmitResponse,
+  storeAction: StoreAction,
+) => () =>
+  onSubmit(button, data, storeAction.setData).then(storeAction.userAnswered)
 
 interface ButtonProps {
   button: Button
   data: Data
-  onSubmit: (button: Button, data: any, setData: (property: string, value: any) => void) => OnSubmitResponse,
+  onSubmit: (
+    button: Button,
+    data: any,
+    setData: (property: string, value: any) => void,
+  ) => OnSubmitResponse
   storeAction: StoreAction
 }
 
-const OneButton = ({
-  button,
-  data,
-  onSubmit,
-  storeAction,
-}: ButtonProps) =>
-      <button
-        className="user-action user-action-button"
-        onClick={onClick(button, data, onSubmit, storeAction)}
-        type="button"
-        >{button.label}</button>
+const OneButton = ({ button, data, onSubmit, storeAction }: ButtonProps) => (
+  <button
+    className="user-action user-action-button"
+    onClick={onClick(button, data, onSubmit, storeAction)}
+    type="button"
+  >
+    {button.label}
+  </button>
+)
 
 interface ButtonsProps {
   data: Data
@@ -47,35 +59,36 @@ interface ButtonsProps {
 
 const Buttons = ({ data, storeAction, userAction }: ButtonsProps) => {
   const { buttons, onSubmit } = userAction
-  return <React.Fragment>
-    {
-      buttons.map((button, index) =>
+  return (
+    <React.Fragment>
+      {buttons.map((button, index) => (
         <OneButton
           button={button}
           data={data}
           onSubmit={onSubmit}
           storeAction={storeAction}
           key={index}
-          />
-      )
-    }
-  </React.Fragment>
+        />
+      ))}
+    </React.Fragment>
+  )
 }
-
 
 const onKeyUp = (
   data: Data,
-  onSubmit: (userInput: string, data: any, setData: (property: string, value: any) => void) => OnSubmitResponse,
-  storeAction: StoreAction
-) =>
-  (e: any) => {
-    if (e.key === 'Enter') {
-      onSubmit(e.target.value, data, storeAction.setData)
-        .then(submited => {
-          storeAction.userAnswered(submited)
-        })
-    }
+  onSubmit: (
+    userInput: string,
+    data: any,
+    setData: (property: string, value: any) => void,
+  ) => OnSubmitResponse,
+  storeAction: StoreAction,
+) => (e: any) => {
+  if (e.key === 'Enter') {
+    onSubmit(e.target.value, data, storeAction.setData).then(submited => {
+      storeAction.userAnswered(submited)
+    })
   }
+}
 
 interface InputProps {
   data: Data
@@ -85,12 +98,14 @@ interface InputProps {
 
 const Input = ({ data, storeAction, userAction }: InputProps) => {
   const { placeholder, type, onSubmit } = userAction
-  return <input
-    className="user-action user-action-input"
-    placeholder={ placeholder || ''}
-    type={ type || 'text'}
-    onKeyUp={onKeyUp(data, onSubmit, storeAction)}
+  return (
+    <input
+      className="user-action user-action-input"
+      placeholder={placeholder || ''}
+      type={type || 'text'}
+      onKeyUp={onKeyUp(data, onSubmit, storeAction)}
     />
+  )
 }
 
 interface Props {
@@ -101,10 +116,14 @@ interface Props {
 
 export default ({ data, storeAction, userAction }: Props) => {
   if (isButtonAction(userAction)) {
-    return <Buttons data={data} storeAction={storeAction} userAction={userAction}/>
+    return (
+      <Buttons data={data} storeAction={storeAction} userAction={userAction} />
+    )
   }
   if (isInputAction(userAction)) {
-    return <Input data={data} storeAction={storeAction} userAction={userAction} />
+    return (
+      <Input data={data} storeAction={storeAction} userAction={userAction} />
+    )
   }
   return null
 }
