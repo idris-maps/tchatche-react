@@ -30,27 +30,6 @@ const onClick = (
 ) => () =>
   onSubmit(button, data, storeAction.setData).then(storeAction.userAnswered)
 
-interface ButtonProps {
-  button: Button
-  data: Data
-  onSubmit: (
-    button: Button,
-    data: any,
-    setData: (property: string, value: any) => void,
-  ) => OnSubmitResponse
-  storeAction: StoreAction
-}
-
-const OneButton = ({ button, data, onSubmit, storeAction }: ButtonProps) => (
-  <button
-    className="user-action user-action-button"
-    onClick={onClick(button, data, onSubmit, storeAction)}
-    type="button"
-  >
-    {button.label}
-  </button>
-)
-
 interface ButtonsProps {
   data: Data
   storeAction: StoreAction
@@ -62,13 +41,14 @@ const Buttons = ({ data, storeAction, userAction }: ButtonsProps) => {
   return (
     <React.Fragment>
       {buttons.map((button, index) => (
-        <OneButton
-          button={button}
-          data={data}
-          onSubmit={onSubmit}
-          storeAction={storeAction}
+        <button
+          className="user-action user-action-button"
           key={index}
-        />
+          onClick={onClick(button, data, onSubmit, storeAction)}
+          type="button"
+        >
+          {button.label}
+        </button>
       ))}
     </React.Fragment>
   )
