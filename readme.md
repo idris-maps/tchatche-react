@@ -13,9 +13,11 @@ const messages: BotMessage[] = [
   // ...
 ]
 
-const onEnd = (({ conversation, data }) => {
-  // ...
-})
+const onEnd = (
+  ({ conversation, data }: { conversation: Message[]; data: object }) => {
+    // ...
+  }
+)
 
 export default <Tchatche messages={messages} onEnd={onEnd} pace={300} />
 ```

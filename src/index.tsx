@@ -7,7 +7,7 @@ import { Store, Unsubscribe } from 'redux'
 
 interface Props {
   messages: BotMessage[]
-  onEnd: (d: { conversation: Message[]; data: object }) => any
+  onEnd: (d: { conversation: Message[]; data: object }) => void
   pace?: number
 }
 
