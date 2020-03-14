@@ -19,9 +19,10 @@ const onEnd = (
   // ...
 }
 
-
 export default <Tchatche messages={messages} onEnd={onEnd} pace={300} />
 ```
+
+No styling is provided. `tchatche` lets you take care of the CSS.
 
 ## `messages` example
 
